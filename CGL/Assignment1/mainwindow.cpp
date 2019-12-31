@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+QImage image(300, 300, QImage::Format_RGB888);
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,115 +13,151 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-int sign(int x2,int x1){
-    if(x2>x1)   return 1;
-    else if(x2<x1)  return -1;
-    else    return 0;
-}
-/*void MainWindow::bresenham(int x1, int y1, int x2, int y2){
-
-}*/
-
-
-/*void MainWindow::on_pushButton_3_clicked()
-{
-    QImage image(300, 300, QImage::Format_RGB888);
-    QRgb value;
-    //draws pixel in white color at x,y
-    //position.
-
-    //shows pixel on screen
-
-    QString X1=ui->textEdit->toPlainText();
-    QString Y1=ui->textEdit_2->toPlainText();
-    QString X2=ui->textEdit_3->toPlainText();
-    QString Y2=ui->textEdit_4->toPlainText();
-
-    int x_1=X1.toInt();
-    int y_1=Y1.toInt();
-    int x_2=X2.toInt();
-    int y_2=Y2.toInt();
-
-    float dx=abs(x_2-x_1);
-    float dy=abs(y_1-y_2);
-
-    float length;
-    if(dx>=dy)  length=dx;
-    else    length=dy;
-
-    float ddx=(x_2-x_1)/length;
-    float ddy=(y_2-y_1)/length;
-
-    float x=x_1+0.5;
-    float y=y_1+0.5;
-
-    int i=1;
-    while(i<=length){
-        int X=x;
-        int Y=y;
-        value=qRgb(0,255,0); //set color of pixel as green
-        //image.setPixel(50,50,value); //draws pixel with value
-
-        image.setPixel(X,Y,value);
-    //    image.setPixel(150,150,qRgb(255,255,255));
-        x=x+ddx;
-        y=y+ddy;
-        i++;
-    }
-
-
-    ui->label_5->setPixmap(QPixmap::fromImage(image));
-    ui->label->show();
-
-
-
-
-
-}*/
-
 void MainWindow::on_pushButton_clicked()
 {
-    QImage image(300, 300, QImage::Format_RGB888);
-    QRgb value;
 
-    QString x_1=ui->textEdit->toPlainText();
-    QString y_1=ui->textEdit_2->toPlainText();
-    QString x_2=ui->textEdit_3->toPlainText();
-    QString y_2=ui->textEdit_4->toPlainText();
+    QString s= ui->textEdit->toPlainText();
+    float x1=s.toFloat();
+    s= ui->textEdit_3->toPlainText();
+    float y1=s.toFloat();
+    s=ui->textEdit_2->toPlainText();
+    float l=s.toFloat();
+    s=ui->textEdit_4->toPlainText();
+    float b=s.toFloat();
+    DDA(x1,y1+b/2,x1+l/2,y1);
+    DDA(x1,y1+b/2,x1+l/2,y1+b);
+    DDA(x1+l,y1+b/2,x1+l/2,y1+b);
+    DDA(x1+l/2,y1,x1+l,y1+b/2);
 
-    int x1=x_1.toInt();
-    int y1=y_1.toInt();
-    int x2=x_2.toInt();
-    int y2=y_2.toInt();
+ }
+void MainWindow::DDA(float x1,float y1,float x2,float y2)
+{
 
-    int dx=abs(x2-x1);
-    int dy=abs(y2-y1);
-    int s1=sign(x2,x1);
-    int s2=sign(y2,y1);
+    float x,y,dx,dy;
 
-    int interchange=0;
+    float length;
+    if(abs(x2-x1)>=abs(y2-y1))
+      length=abs(x2-x1);
+    else
+      length=abs(y2-y1);
+    dx=(x2-x1)/length;
+    dy=(y2-y1)/length;
+    x=x1+0.5;
+    y=y1+0.5;
+    int i=1;
+    while(i<=length)
+    {
+       image.setPixel((int)x,(int)y,qRgb(0,0,255));
+       x=x+dx;
+       y=y+dy;
+       i++;
+    }
 
-    if(dy>dx){
-        int temp=dx;
+    ui->label_5->setPixmap(QPixmap::fromImage(image));
+    ui->label_5->show();
+
+
+}
+void MainWindow::BA(float x1,float y1,float x2,float y2)
+{
+
+    float x,y,dx,dy,e;
+    int i=1;
+    x=x1;
+    y=y1;
+    dx=x2-x1;
+    dy=y2-y1;
+    float temp;
+    int inter=0;
+    if(dy>dx)
+    {
+        temp=dx;
         dx=dy;
         dy=temp;
-        interchange=1;
+        inter=1;
     }
-    else    interchange=0;
+    e=2*dy-dx;
+    while(i<dx)
+    {
+        image.setPixel((int)x,(int)y,qRgb(0,0,255));
+        while(e>0)
+        {
+           if(inter==1)
+               x=x+1;
+           else
+               y=y+1;
 
-    int e=2*dy-dx;
-    int x=x1;
-    int y=y1;
-    for(int i=1;i<=dx;i++){
-        value=qRgb(0,255,0);
-        image.setPixel(x,y,value);
-        while(e>0){
-            if(interchange=1)   x=x+s1;
-            else    y=y+s2;
-            e=e-2*dx;
+           e=e-2*dx;
         }
-        if(interchange==1)  y=y+s2;
-        else    x=x+s1;
+        if(inter==1)
+        y=y+1;
+        else
+            x=x+1;
+
         e=e+2*dy;
+        i++;
     }
+    ui->label_5->setPixmap(QPixmap::fromImage(image));
+    ui->label_5->show();
+
 }
+void MainWindow::on_pushButton_2_clicked()
+{
+
+   QString s= ui->textEdit->toPlainText();
+   float x1=s.toFloat();
+   s= ui->textEdit_3->toPlainText();
+   float y1=s.toFloat();
+   s=ui->textEdit_2->toPlainText();
+   float l=s.toFloat();
+   s=ui->textEdit_4->toPlainText();
+   float b=s.toFloat();
+   float x2,y2,x3,y3,x4,y4;
+   x2=x1+l;
+   y2=y1;
+   x3=x1;
+   y3=y1+b;
+   x4=x1+l;
+   y4=y1+b;
+   BA(x1,y1,x2,y2);
+   BA(x1,y1,x3,y3);
+   BA(x3,y3,x4,y4);
+   BA(x2,y2,x4,y4);
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QString s= ui->textEdit->toPlainText();
+    float x1=s.toFloat();
+    s= ui->textEdit_3->toPlainText();
+    float y1=s.toFloat();
+    s=ui->textEdit_2->toPlainText();
+    float l=s.toFloat();
+    s=ui->textEdit_4->toPlainText();
+    float b=s.toFloat();
+    float x2,y2,x3,y3,x4,y4;
+    x2=x1+l;
+    y2=y1;
+    x3=x1;
+    y3=y1+b;
+    x4=x1+l;
+    y4=y1+b;
+    BA(x1,y1,x2,y2);
+    BA(x1,y1,x3,y3);
+    BA(x3,y3,x4,y4);
+    BA(x2,y2,x4,y4);
+    DDA(x1,y1+b/2,x1+l/2,y1);
+    DDA(x1,y1+b/2,x1+l/2,y1+b);
+    DDA(x1+l,y1+b/2,x1+l/2,y1+b);
+    DDA(x1+l/2,y1,x1+l,y1+b/2);
+    BA(x1+l/4,y1+b/4,x1+3*l/4,y1+b/4);
+    BA(x1+l/4,y1+b/4,x1+l/4,y1+3*b/4);
+    BA(x1+l/4,y1+3*b/4,x1+3*l/4,y1+3*b/4);
+    BA(x1+3*l/4,y1+b/4,x1+3*l/4,y1+3*b/4);
+
+}
+
+
+
+
+

@@ -16,9 +16,13 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_3_clicked();
-
     void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+    void DDA(float,float,float,float);
+    void BA(float,float,float,float);
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::MainWindow *ui;
