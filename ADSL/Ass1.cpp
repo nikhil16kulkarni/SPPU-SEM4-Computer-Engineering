@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include<bits/stdc++.h>
+#define MAX 100
 using namespace std;
 
 class Node{
@@ -31,101 +32,96 @@ public:
 };
 
 
-class queue
-{
-  Node* d[20];
-  int front,rear;
-  public:
-  queue()
-  {
-  	front=rear=-1;
-  }
-
-  void push(Node* temp)
-  {
-  	if(front==-1)
-  	{
-  		front=0;
-
-	 }
-	  rear++;
-	  d[rear]=temp;
-  }
-
-  Node* pop()
-  {
-  	Node* temp;
-  	if(front==-1)
-  	  cout<<"Queue is empty ";
-
-  	else
-    {
-      temp=d[front];
-      if(front==rear)
-      {
-      	front=rear=-1;
-	  }
-	  else
-	  front++;
-
-	}
-  	return temp;
-  }
-
-  int isempty()
-  {
-	if(front==-1)
- 	return 1;
- 	else
- 	return 0;
-  }
-
-  Node* first()
-  {
-	return d[front];
-  }
-
-  void pop1()
-  {
-  	front++;
-  }
-};
-
-class stack
+class Stack
 {
 	int top;
-	Node* s[20];
-public:
-	stack()
-    {
-		top=-1;
-    }
-	void push(Node* temp)
+	Node *data[MAX];
+	public:
+	Stack()
+	{	top=-1;	}
+	void push(Node *p)
 	{
-    	s[++top]=temp;
-	}
-	Node* pop()
-	{
-		Node* t;
-		if(top==-1){
-			cout<<"\nStack is empty ";
-		return NULL;}
+		if(!full())
+			data[++top]=p;
 		else
-		{
-			t=s[top];
-			top=top-1;
-			return t;
-		}
+			cout<<"Full\n";
 	}
-	int isempty()
+	Node *pop()
+	{
+		if(!empty())
+			return data[top--];
+		else
+			return NULL;
+	}
+	bool empty()
 	{
 		if(top==-1)
-			return 1;
-		else
-			return 0;
+			return true;
+		return false;
 	}
-
+	bool full()
+	{
+		if(top==MAX-1)
+			return true;
+		return false;
+	}
 };
+class Queue
+{
+	Node *data[MAX];
+	int front,rear;
+public:
+	Queue()
+	{
+		front=rear=-1;
+	}
+	void push(Node*);
+	Node * pop();
+	bool empty();
+	bool full();
+};
+void Queue::push(Node *p)
+{
+	if(!full())
+	{
+		if(empty())
+		{
+			front=0;
+		}
+		rear=(rear+1)%MAX;
+		data[rear]=p;
+	}
+}
+Node * Queue::pop()
+{
+	if(!empty())
+	{
+		Node *p=data[front];
+		if(front==rear)
+		{
+			front=rear=-1;
+		}
+		else
+		{
+			front=(front+1)%MAX;
+		}
+		return p;
+	}
+	else
+		return NULL;
+}
+bool Queue::empty()
+{
+	if(rear==-1)
+		return 1;
+	return 0;
+}
+bool Queue::full()
+{
+	if(front==(rear+1)%MAX)
+		return 1;
+	return 0;
+}
 
 
 class Tree{
@@ -134,7 +130,7 @@ public:
 	Tree(){
 		root=NULL;
 	}
-	void createnr();//Non-Recursive(Not Completed)
+	void createnr();//Non-Recursive(Not Completed) ----> Completed
 	Node* creater();//Recursive
 //	Node* insert(Node*);
 	void inorderr(Node*);//Recursive
@@ -142,16 +138,18 @@ public:
 	void postorderr(Node*);//Recursive
 	Node* get_root();
 	void set_root();
-	void inordernr(Node*);//Non Recursive
-	void preordernr(Node*);//Non Recursive
-	void postordernr(Node*);//Non Recursive
+	void inordernr();//Non Recursive
+	void preordernr();//Non Recursive
+	void postordernr();//Non Recursive
 	void deletenode(Node*);
 	Node* copy(Node*);
 	void operator=(Tree &);
-	int equality(Node*,Node*);
-	void mirror(Node*);
-	void internalnodes();
-	void leafnodes(Node*);
+	int equality(Node*,Node*);//Not Completed
+	void create_mirror(Tree);
+	Node* mirror(Node*,Node*);
+	int internalnodes(Node*);//Not Completed
+	int leafnodes(Node*);//Not Completed
+	void print();//Not Completed
 
 
 };
@@ -166,6 +164,108 @@ void Tree::deletenode(Node *p){
 	}
 }
 
+void Tree::createnr()
+{
+	Queue obj;
+	Node *p=NULL;
+	int x;
+	if(root==NULL)
+	{
+		cout<<"Enter Data or -1 to STOP\n";
+		cin>>x;
+		if(x==-1)
+			return;
+		root=new Node(x);
+		obj.push(root);
+	}
+	p=root;
+	while(!obj.empty())
+	{
+		p=obj.pop();
+		cout<<"Enter Left of "<<p->data<<" OR -1 \n";
+		cin>>x;
+		if(x!=-1)
+		{
+			p->lchild=new Node(x);
+			obj.push(p->lchild);
+		}
+		cout<<"Enter Right of "<<p->data<<" OR -1 \n";
+		cin>>x;
+		if(x!=-1)
+		{
+			p->rchild=new Node(x);
+			obj.push(p->rchild);
+		}
+	}//end of while
+}
+
+void Tree::preordernr()
+{
+	cout<<"PREORDER TRAVERSAL\n";
+	Stack S;
+	Node *p=root;
+	S.push(p);
+	while(!S.empty())
+	{
+		p=S.pop();
+		cout<<p->data<<"\t";
+		if(p->rchild!=NULL)
+			S.push(p->rchild);
+		if(p->lchild!=NULL)
+			S.push(p->lchild);
+	}
+	cout<<"\n";
+}
+
+
+void Tree::inordernr()
+{
+	cout<<"INORDER TRAVERSAL\n";
+	Stack S;
+	Node *p=root;
+	while(p!=NULL)
+	{
+		S.push(p);
+		p=p->lchild;
+	}
+	while(!S.empty())
+	{
+		p=S.pop();
+		cout<<p->data<<"\t";
+		p=p->rchild;
+		while(p!=NULL)
+		{
+			S.push(p);
+			p=p->lchild;
+		}
+	}
+	cout<<"\n";
+}
+
+
+void Tree::postordernr()
+{
+	cout<<"POSTORDER TRAVERSAL\n";
+	Stack S1,S2;
+	Node *p=root;
+	S1.push(p);
+	while(!S1.empty())
+	{
+		p=S1.pop();
+		S2.push(p);
+		if(p->lchild!=NULL)
+			S1.push(p->lchild);
+		if(p->rchild!=NULL)
+			S1.push(p->rchild);
+	}
+	while(!S2.empty())
+	{
+		p=S2.pop();
+		cout<<p->data<<"\t";
+	}
+	cout<<"\n";
+}
+
 
 /*void Tree::createnr(){
 		queue q;
@@ -175,7 +275,6 @@ void Tree::deletenode(Node *p){
 		cin>>x;
 		root=new Node(x);
 		q.push(root);
-
 		while(!q.isempty())
 		{
 		 t=q.pop();
@@ -297,7 +396,6 @@ void Tree::postorderr(Node* t){
 /*void Tree::inordernr(Node* t){
 	stack a;
 		Node* p=root;
-
 		while(1)
 		{
 			while(p!=NULL)
@@ -312,7 +410,6 @@ void Tree::postorderr(Node* t){
 			p=p->rchild;
 		}
 }
-
 void Tree::preordernr(Node* t){
 	stack a;
 		Node* p=root;
@@ -323,7 +420,6 @@ void Tree::preordernr(Node* t){
 				cout<<p->data<<"\t";
 				if(p->rchild!=NULL)
 				  a.push(p->rchild);
-
 	            p=p->lchild;
 	        }
 			if(a.isempty())
@@ -331,7 +427,6 @@ void Tree::preordernr(Node* t){
 			p=a.pop();
 		}
 }
-
 void Tree::postordernr(Node* t){
 		stack a;
 		stack b;
@@ -369,7 +464,7 @@ void Tree::operator=(Tree &t){
 	root=copy(t.root);
 }
 
-void Tree::leafnodes(Node* p)
+/*void Tree::leafnodes(Node* p)
 {
 
 	if(!p)
@@ -383,46 +478,66 @@ void Tree::leafnodes(Node* p)
 	 leafnodes(p->lchild);
 	if(p->rchild)
 	 leafnodes(p->rchild);
-}
-/*void Tree::internalnodes()
-{
-	queue q;
-	q.push(root);
-	bool flag;
-	while(!q.isempty())
-	{
-	  Node* p=q.first();
-	  q.pop1();
-	  flag=0;
-	  if(p->lchild)
-	  {
-	  	flag=1;
-	  	q.push(p->lchild);
-	  }
-	  if(p->rchild)
-	  {
-	  	flag=1;
-	  	q.push(p->rchild);
-	  }
-	   if(flag==1)
-	    cout<<p->data<<" ";
-	}
-
 }*/
 
 
-void Tree::mirror(Node* p)
-{
+void Tree::print(){
+    int c;
+	cout<<"Internal Nodes is/are\n";
+	c=internalnodes(root);
+	cout<<"\nNo.of Internal Nodes is/are "<<c<<"\n";
+	cout<<"\nLeaf Nodes is/are\n";
+	c=leafnodes(root);
+	cout<<"\nNo.of Leaf Nodes is/are "<<c<<"\n";
+}
+
+int Tree::internalnodes(Node* p)
+{   //cout<<"Internal Nodes are\n";
 	if(p==NULL)
-	    return;
+		return 0;
+	if(p->lchild==NULL&&p->rchild==NULL)
+		return 0;
 	else
 	{
-	 	Node* temp;
-	 	mirror(p->lchild);
-	 	mirror(p->rchild);
-	 	temp=p->lchild;
-	 	p->lchild=p->rchild;
-	 	p->rchild=temp;
+		int l,r;
+		cout<<p->data<<" ";
+		l=internalnodes(p->lchild);
+		r=internalnodes(p->rchild);
+		return 1+l+r;
+	}
+}
+
+int Tree::leafnodes(Node* p){
+    if(p==NULL)
+		return 0;
+	if(p->lchild==NULL&&p->rchild==NULL)
+	{
+		cout<<p->data<<" ";
+		return 1;
+	}
+	else
+	{
+		return leafnodes(p->lchild)+leafnodes(p->rchild);
+	}
+}
+
+void Tree::create_mirror(Tree T)
+{
+	root=mirror(root,T.root);
+}
+
+
+
+Node* Tree::mirror(Node* p,Node *q)
+{
+	if(q==NULL)
+		return NULL;
+	else
+	{
+		p=new Node(q->data);
+		p->lchild=mirror(p->lchild,q->rchild);
+		p->rchild=mirror(p->rchild,q->lchild);
+		return p;
 	}
 }
 
@@ -458,19 +573,25 @@ void Tree::operator = (Tree t)
 int main() {
 	int a;
 	char yn;
-	Tree t,t1,obj,obj1,obj2;
+	Tree t,t1,obj,obj1,obj2,Mir;
 	Node *l,*p;
 //	Node* p=new Node();
 	do{
 
-		cout<<"1.Enter Tree Recursive\n2.Enter Tree Non-Recursive\n9.Delete All Nodes\n10.Copy the given tree\n11.Find Mirror Image\n12.Find Leaf Nodes\n13.Find Internal Nodes\n14.Check if given tree is equal or not";
+		cout<<"1.Enter Tree Recursive\n2.Enter Tree Non-Recursive\n3.Delete All Nodes\n4.Copy the given tree\n5.Find Mirror Image\n6.Find Internal & Leaf Nodes\n7.Check if given tree is equal or not\n";
 		cin>>a;
 		switch(a){
 		case 1: t.set_root();
 				p=t.get_root();
+				cout<<"Inorder Traversal :"<<endl;
 				t.inorderr(p);
+				cout<<endl;
+				cout<<"Preorder Traversal :"<<endl;
 				t.preorderr(p);
+				cout<<endl;
+				cout<<"Postorder Traversal :"<<endl;
 				t.postorderr(p);
+				cout<<endl;
 				break;
 		/*case 2: p=t.get_root();
 				t.inorderr(p);
@@ -481,47 +602,49 @@ int main() {
 		case 4: p=t.get_root();
 				t.postorderr(p);
 				break;*/
-		/*case 2:	t.createnr();
-				t.inordernr(p);
-				t.preordernr(p);
-				t.postordernr(p);
-				break;*/
+		case 2:	t.createnr();
+				t.inordernr();
+				t.preordernr();
+				t.postordernr();
+				break;
 	/*	case 6:	t.inordernr(p);
 				break;
 		case 7: t.preordernr(p);
 				break;
 		case 8: t.postordernr(p);
 				break;*/
-		case 9: cout<<"Deleting all the nodes\n";
+		case 3: cout<<"Deleting all the nodes\n";
 				t.deletenode(p);
 				break;
-		case 10:cout<<"Copying.....\n";
+		case 4:cout<<"Copying.....\n";
 				t1=t;
 				cout<<"Tree Copied\nNow Printing the copied Tree using Inorder Traversal\n";
 				t1.inorderr(p);
 				break;
-		case 11:cout<<"Mirror Image";
-				p=obj.get_root();
-				obj.mirror(p);
-				cout<<"\nInorder traversal of mirror image of tree ";
-				obj.inorderr(p);
-				break;
-		case 12:cout<<"Find Leaf Nodes";
+		case 5: 
+			    cout<<"Mirror Image of Tree is\n";
+			    Mir.create_mirror(t);
+			    Mir.inordernr();
+				Mir.preordernr();
+				Mir.postordernr();
+			    break;
+	/*	case 6:cout<<"Find Leaf Nodes";
 				p=obj.get_root();
 				obj.leafnodes(p);
 				cout<<endl;
-				break;
-	/*	case 13:cout<<"Find Internal Nodes";
-				p=obj.get_root();
-				obj.internalnodes(p);
 				break;*/
-		case 14:l=obj.get_root();
+		case 6://cout<<"Find Internal Nodes";
+				p=obj.get_root();
+				obj.print();
+				break;
+		case 7:l=obj.get_root();
 				p=obj1.get_root();
 				if(obj2.equality(l,p))
 					cout<<"\nBoth trees are equal ";
 				else
 					cout<<"\nBoth trees are not equal ";
-		break;
+		        break;
+		default: cout<<"Incorrect choice entered :\n";
 		}
 		cout<<"\nDo you want to continue(y/n)?        ";
 		cin>>yn;
@@ -529,17 +652,13 @@ int main() {
 }
 
 /*  INORDER NON-RECURSIVE ALGO
-
            1
           / \
          2   3
         / \
        4   5
-
 Step 1 Creates an empty stack: S = NULL
-
 Step 2 sets current as address of root: current -> 1
-
 Step 3 Pushes the current node and set current = current->left until current is NULL
      current -> 1
      push 1: Stack S -> 1
@@ -548,42 +667,34 @@ Step 3 Pushes the current node and set current = current->left until current is 
      current -> 4
      push 4: Stack S -> 4, 2, 1
      current = NULL
-
 Step 4 pops from S
      a) Pop 4: Stack S -> 2, 1
      b) print "4"
      c) current = NULL (right of 4) and go to step 3
 Since current is NULL step 3 doesn't do anything.
-
 Step 4 pops again.
      a) Pop 2: Stack S -> 1
      b) print "2"
      c) current -> 5 (right of 2)  and go to step 3
-
 Step 3 pushes 5 to stack and makes current NULL
      Stack S -> 5, 1
      current = NULL
-
 Step 4 pops from S
      a) Pop 5: Stack S -> 1
      b) print "5"
      c) current = NULL (right of 5)  and go to step 3
 Since current is NULL step 3 doesn't do anything
-
 Step 4 pops again.
      a) Pop 1: Stack S -> NULL
      b) print "1"
      c) current -> 3 (right of 5)
-
 Step 3 pushes 3 to stack and makes current NULL
      Stack S -> 3
      current = NULL
-
 Step 4 pops from S
      a) Pop 3: Stack S -> NULL
      b) print "3"
      c) current = NULL (right of 3)
-
 Traversal is done now as stack S is empty and current is NULL.
 */
 
