@@ -17,8 +17,8 @@ class Node{
 	Node* rchild;
 	friend class Tree;
 //	friend class Tree;
-	friend class queue;
-	friend class stack;
+	friend class Queue;
+	friend class Stack;
 public:
 	Node(){
 		data=0;
@@ -79,6 +79,7 @@ public:
 	Node * pop();
 	bool empty();
 	bool full();
+	Node* first();
 };
 void Queue::push(Node *p)
 {
@@ -123,6 +124,11 @@ bool Queue::full()
 	return 0;
 }
 
+Node* Queue::first()
+  {
+	return data[front];
+  }
+
 
 class Tree{
 	Node *root;
@@ -144,12 +150,12 @@ public:
 	void deletenode(Node*);
 	Node* copy(Node*);
 	void operator=(Tree &);
-	int equality(Node*,Node*);//Not Completed
+	int equality(Node*,Node*);//Not Completed ----> Completed
 	void create_mirror(Tree);
 	Node* mirror(Node*,Node*);
-	int internalnodes(Node*);//Not Completed
-	int leafnodes(Node*);//Not Completed
-	void print();//Not Completed
+	int internalnodes(Node*);//Not Completed ----> Completed
+	int leafnodes(Node*);//Not Completed ----> Completed
+	void print();//Not Completed ----> Completed
 
 
 };
@@ -466,7 +472,6 @@ void Tree::operator=(Tree &t){
 
 /*void Tree::leafnodes(Node* p)
 {
-
 	if(!p)
 	 return;
 	if(!p->lchild && !p->rchild)
@@ -544,11 +549,48 @@ Node* Tree::mirror(Node* p,Node *q)
 
 int Tree::equality(Node* p,Node* q)
 {
-	if(p==NULL && q==NULL)
-	return 1;
-	if(p!=NULL && q!=NULL)
-    	return (p->data==q->data  && equality(p->lchild,q->lchild) && equality(p->rchild,q->rchild));
-	return 0;
+	if(q==NULL&&p==NULL)
+		{
+			return true;
+		}
+		if(p==NULL||q==NULL)
+		{
+			return false;
+		 }
+		 Queue q1,q2;
+		 q1.push(q);
+		 q2.push(p);
+		 while(!q1.empty()&&!q2.empty())
+		 {
+		 	Node* n1=q1.first();
+		 	Node* n2=q2.first();
+		 	if(n1->data!=n2->data)
+		 	{
+		 		return false;
+			 }
+			 q1.pop();
+			 q2.pop();
+			 if(n1->lchild&&n2->lchild)
+			 {
+			 	q1.push(n1->lchild);
+			 	q2.push(n2->lchild);
+			 }
+			 else if(n1->lchild||n2->lchild)
+			{
+				return false;
+			}
+			if(n1->rchild&&n2->rchild)
+	        {
+	            q1.push(n1->rchild);
+	            q2.push(n2->rchild);
+	        }
+	        else if(n1->rchild||n2->rchild)
+	        {
+			    return false;
+			}
+
+		 }
+		 return true;
 }
 
 
@@ -612,7 +654,7 @@ int main() {
 		case 7: t.preordernr(p);
 				break;
 		case 8: t.postordernr(p);
-				break;*/
+				break;		*/
 		case 3: cout<<"Deleting all the nodes\n";
 				t.deletenode(p);
 				break;
@@ -621,7 +663,7 @@ int main() {
 				cout<<"Tree Copied\nNow Printing the copied Tree using Inorder Traversal\n";
 				t1.inorderr(p);
 				break;
-		case 5: 
+		case 5:
 			    cout<<"Mirror Image of Tree is\n";
 			    Mir.create_mirror(t);
 			    Mir.inordernr();
@@ -632,12 +674,16 @@ int main() {
 				p=obj.get_root();
 				obj.leafnodes(p);
 				cout<<endl;
-				break;*/
+				break;		*/
 		case 6://cout<<"Find Internal Nodes";
-				p=obj.get_root();
-				obj.print();
+				p=t.get_root();
+				t.print();
 				break;
-		case 7:l=obj.get_root();
+		case 7: cout<<"Enter First Tree\n";
+				obj.set_root();
+				l=obj.get_root();
+				cout<<"Enter Second Tree\n";
+				obj1.set_root();
 				p=obj1.get_root();
 				if(obj2.equality(l,p))
 					cout<<"\nBoth trees are equal ";
@@ -701,9 +747,6 @@ Traversal is done now as stack S is empty and current is NULL.
 
 
 
-
-
-
 /* PREORDER NON-RECURSIVE ALGO
  	 1) Create an empty stack nodeStack and push root node to stack.
 	 2) Do following while nodeStack is not empty.
@@ -712,7 +755,17 @@ Traversal is done now as stack S is empty and current is NULL.
       ….c) Push left child of popped item to stack
  */
 
+
+
 /* POSTORDER NON-RECURSIVE ALGO
- *
- *
+ 1.1 Create an empty stack
+ 2.1 Do following while root is not NULL
+    a) Push root's right child and then root to stack.
+    b) Set root as root's left child.
+ 2.2 Pop an item from stack and set it as root.
+    a) If the popped item has a right child and the right child 
+       is at top of stack, then remove the right child from stack,
+       push the root back and set root as root's right child.
+    b) Else print root's data and set root as NULL.
+ 2.3 Repeat steps 2.1 and 2.2 while stack is not empty.
  */
