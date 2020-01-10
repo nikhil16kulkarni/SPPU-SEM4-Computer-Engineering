@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : Ass1.cpp
+// Name        : Assignment1.cpp
 // Author      : Nikhil Kulkarni
 // Version     :
 // Copyright   : Your copyright notice
