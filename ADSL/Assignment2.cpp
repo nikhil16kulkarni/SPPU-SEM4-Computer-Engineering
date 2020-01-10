@@ -10,109 +10,84 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-/*class Node{
-	char word[20];
-	char mean[20];
-	Node* left,*right;
-public:
-	Node(){
-		left=right=NULL;
-	}
-	Node(char w[],char m[]){
-		left=right=NULL;
-	}
-	friend class Dictionary;
-};
 
-class Dictionary{
-	Node *root;
-	int n;
-	char w[20],m[20];
-public:
-	Dictionary(){
-		root=NULL;
-		n=0;
-	}
-	void createBST();
-
-};
-
-void Dictionary::createBST(){
-	cout<<"Enter no. of entries : ";
-	cin>>n;
-	for(int i=0;i<n;i++){
-		cout<<"Enter the word : ";
-		cin>>w;
-		cout<<"Enter meaning of word : ";
-		cin>>m;
-
-	}
-}
-
-
-int main() {
-
-}*/
-
-class node
+class Node
 {
  public:
  char k[20];
  char m[20];
- class node  *left;
- class node * right;
+ class Node  *left;
+ class Node * right;
+ friend class dictionary;
 };
 
-class dict
+class dictionary
 {
+
+
 public:
- node *root;
+
+	Node *root;
+
+
+ dictionary(){
+	 root=NULL;
+ }
+
  void create();
- void display(node *);
- void insert(node * root,node *temp);
- int search(node *,char []);
- int update(node *,char []);
- node* del(node *,char []);
- node * min(node *);
+ void displaya(Node*);
+ void displayd(Node*);
+ void insert(Node*,Node*);
+ int search(Node*,char []);
+ int update(Node*,char []);
+ Node* del(Node*,char []);
+ Node* min(Node*);
+
+
+
 };
 
-void dict :: create()
+void dictionary::create()
 {
- class node *temp;
- int ch;
+ Node *temp;
+ char ch;
 
  do
  {
-  temp = new node;
+  temp = new Node;
+
   cout<<"\nEnter Keyword:";
   cin>>temp->k;
+
   cout<<"\nEnter Meaning:";
   cin>>temp->m;
 
-  temp->left = NULL;
-  temp->right = NULL;
+  temp->left=NULL;
+  temp->right=NULL;
 
-  if(root == NULL)
+  if(root==NULL)
   {
-   root = temp;
+   root=temp;
   }
   else
   {
    insert(root, temp);
   }
-  cout<<"\nDo u want to add more (y=1/n=0):";
+
+  cout<<"\nDo you want to add more keywords?(y/n):";
   cin>>ch;
+
  }
- while(ch == 1);
+ while(ch=='y'||ch=='Y');
 
 }
 
-void dict ::  insert(node * root,node *temp)
+void dictionary::insert(Node* root,Node* temp)
 {
- if(strcmp (temp->k, root->k) < 0 )
+ if(strcmp(temp->k,root->k)<0)
  {
-  if(root->left == NULL)
-   root->left = temp;
+  if(root->left==NULL)
+   root->left=temp;
   else
    insert(root->left,temp);
  }
@@ -125,87 +100,118 @@ void dict ::  insert(node * root,node *temp)
 
 }
 
-void dict:: display(node * root)
+void dictionary::displaya(Node* root)
 {
- if( root != NULL)
+
+ if(root!=NULL)
  {
-  display(root->left);
-  cout<<"\n Key Word :"<<root->k;
+  displaya(root->left);
+  cout<<"\n KeyWord :"<<root->k;
   cout<<"\t Meaning :"<<root->m;
-  display(root->right);
+  displaya(root->right);
  }
+
 }
 
-/*int dict :: search(node * root,char k[20])
+void dictionary::displayd(Node* root){
+ if(root!=NULL)
+  {
+   displayd(root->right);
+   cout<<"\n KeyWord :"<<root->k;
+   cout<<"\t Meaning :"<<root->m;
+   displayd(root->left);
+  }
+
+}
+
+int dictionary::search(Node* root,char k[20])
 {
  int c=0;
- while(root != NULL)
+
+ while(root!=NULL)
  {
   c++;
-  if(strcmp (k,root->k) == 0)
+  if(strcmp(k,root->k)==0)
   {
-   cout<<"\nNo of Comparisons:"<<c;
+   cout<<"\nNo of Comparisons are:"<<c;
    return 1;
   }
-  if(strcmp (k, root->k) < 0)
-   root = root->left;
-  if(strcmp (k, root->k) > 0)
+
+  if(strcmp(k,root->k)<0)
+   root=root->left;
+
+  if(strcmp(k,root->k)>0)
    root = root->right;
  }
 
  return -1;
 }
-int dict :: update(node * root,char k[20])
+
+
+int dictionary::update(Node * root,char k[20])
 {
- while(root != NULL)
+ while(root!=NULL)
  {
-  if(strcmp (k,root->k) == 0)
+  if(strcmp(k,root->k) == 0)
   {
-   cout<<"\nEnter New Meaning ofKeyword"<<root->k;
+   cout<<"\nEnter New Meaning of Keyword  "<<root->k;
    cin>>root->m;
    return 1;
   }
-  if(strcmp (k, root->k) < 0)
-   root = root->left;
-  if(strcmp (k, root->k) > 0)
-   root = root->right;
+  if(strcmp (k,root->k) < 0)
+   root=root->left;
+  if(strcmp(k, root->k) > 0)
+   root=root->right;
  }
  return -1;
 }
-node* dict :: del(node * root,char k[20])
+
+
+Node* dictionary::del(Node * root,char k[20])
 {
- node *temp;
+ Node *temp;
 
- if(root == NULL)
+
+ if(root==NULL)
  {
-  cout<<"\nElement No Found";
+  cout<<"\nElement Not Found";
   return root;
  }
 
- if (strcmp(k,root->k) < 0)
+
+ if(strcmp(k,root->k)<0)
  {
-  root->left = del(root->left, k);
-  return root;
- }
- if (strcmp(k,root->k) > 0)
- {
-  root->right = del(root->right, k);
+  root->left=del(root->left,k);
   return root;
  }
 
- if (root->right==NULL&&root->left==NULL)
+
+
+ if(strcmp(k,root->k)>0)
+ {
+  root->right=del(root->right,k);
+  return root;
+ }
+
+
+
+ if(root->right==NULL&&root->left==NULL)
  {
   temp = root;
   delete temp;
   return NULL;
  }
+
+
  if(root->right==NULL)
  {
-  temp = root;
-  root = root->left;
+  temp=root;
+  root=root->left;
   delete temp;
   return root;
  }
+
+
  else if(root->left==NULL)
  {
   temp = root;
@@ -213,28 +219,30 @@ node* dict :: del(node * root,char k[20])
   delete temp;
   return root;
  }
- temp = min(root->right);
+
+
+ temp=min(root->right);
  strcpy(root->k,temp->k);
- root->right = del(root->right, temp->k);
+ root->right=del(root->right,temp->k);
  return root;
 
 }
 
-node * dict :: min(node *q)
+Node* dictionary::min(Node *q)
 {
- while(q->left != NULL)
+ while(q->left!=NULL)
  {
-  q = q->left;
+  q=q->left;
  }
  return q;
 }
-*/
+
 
 
 int main()
 {
  int ch;
- dict d;
+ dictionary d;
  d.root = NULL;
 
 
@@ -245,70 +253,76 @@ int main()
 
   switch(ch)
   {
-case 1: d.create();
-  break;
-case 2: if(d.root == NULL)
-  {
-  cout<<"\nNo any Keyword";
-  }
-  else
-  {
-  d.display(d.root);
-  }
-  break;
-/*case 3: if(d.root == NULL)
- {
-  cout<<"\nDictionary is Empty. First add keywords then try again ";
- }
-  else
- {
+  	  case 1: d.create();
+  	  	  	  break;
 
-       cout<<"\nEnter Keyword which u want to search:";
-  char k[20];
-  cin>>k;
 
-  if( d.search(d.root,k) == 1)
-  cout<<"\nKeyword Found";
-  else
-  cout<<"\nKeyword Not Found";
- }
-  break;
-case 4:
-  if(d.root == NULL)
-  {
-  cout<<"\nDictionary is Empty. First add keywords then try again ";
- }
-  else
-  {
-  cout<<"\nEnter Keyword which meaning  want to update:";
-  char k[20];
-  cin>>k;
-  if(d.update(d.root,k) == 1)
-  cout<<"\nMeaning Updated";
-  else
-  cout<<"\nMeaning Not Found";
-  }
-  break;
-case 5:
-  if(d.root == NULL)
-  {
-  cout<<"\nDictionary is Empty. First add keywords then try again ";
-  }
-  else
-  {
-  cout<<"\nEnter Keyword which u want to delete:";
-  char k[20];
-  cin>>k;
-  if(d.root == NULL)
-  {
-  cout<<"\nNo any Keyword";
-  }
-  else
-  {
-  d.root = d.del(d.root,k);
-    }
-   }*/
-  }
+  	  case 2: if(d.root==NULL)
+  	  	  	  {
+  		  	  	  cout<<"\nNo any Keyword";
+  	  	  	  }
+  	  	  	  else
+  	  	  	  {	cout<<"\nAscending Order : \n";
+  	  	  		  d.displaya(d.root);
+  	  	  		cout<<"\n\n\n\nDescending Order : \n";
+  	  	  			d.displayd(d.root);
+  	  	  	  }
+  	  	  	  break;
+
+
+  	  case 3: if(d.root==NULL)
+  	  	  	  {
+  		  	  cout<<"\nDictionary is Empty.Add some words before searching";
+  	  	  	  }
+  	  	  	  else
+  	  	  	  {
+  	  	  		  cout<<"\nEnter Keyword to be searched  :  ";
+  	  		  	  char k[20];
+  	  		  	  cin>>k;
+
+  	  		  	  if( d.search(d.root,k)==1)
+  	  		  		  cout<<"\nKeyword Found\n";
+  	  		  	  else
+  	  		  		  cout<<"\nKeyword Not Found\n";
+  	  	  	  }
+  	  	  	  break;
+
+  	  case 4:
+  		  	  if(d.root==NULL)
+  		  	  {
+  		  		  cout<<"\nDictionary is Empty.Add some words before modifying ";
+  		  	  }
+  		  	  else
+  		  	  {
+  		  		  cout<<"\nEnter Keyword whose meaning is to be updated :  ";
+  		  		  char k[20];
+  		  		  cin>>k;
+  		  		  if(d.update(d.root,k)==1)
+  		  			  cout<<"\nMeaning Updated ";
+  		  		  else
+  		  			  cout<<"\nKeyWord Not Found ";
+  		  	  }
+  		  	  break;
+  	  case 5:
+  		  	  if(d.root == NULL)
+  		  	  {
+  		  		  cout<<"\nDictionary is Empty.Add some words before deleting ";
+  		  	  }
+  		  	  else
+  		  	  {
+  		  		  cout<<"\nEnter Keyword to be deleted : ";
+  		  		  char k[20];
+  		  		  cin>>k;
+  		  		  if(d.root==NULL)
+  		  		  {
+  		  			  cout<<"\nKeyWord not found";
+  		  		  }
+  		  		  else
+  		  		  {
+  		  			  d.root=d.del(d.root,k);
+  		  		  }
+  		  	  }
+  	  }
  }
  while(ch<=5);
  return 0;
