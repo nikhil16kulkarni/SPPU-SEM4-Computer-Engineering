@@ -5,7 +5,7 @@
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
 //============================================================================
-
+/*
 #include <iostream>
 #include<bits/stdc++.h>
 using namespace std;
@@ -367,3 +367,347 @@ int main()
  return 0;
 
 }
+
+*/
+
+//============================================================================
+// Name        : Assignment2.cpp
+// Author      : Nikhil Kulkarni
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+
+
+class entry
+{
+	char *word;
+	char *meaning;
+	entry *lchild, *rchild;
+public :
+	entry()
+{
+		word=NULL;
+		meaning=NULL;
+		lchild=rchild=NULL;
+}
+	entry(char *w,char *m)
+	{
+		word=new char[strlen(w)+1];
+		meaning=new char[strlen(m)+1];
+		strcpy(word,w);
+		strcpy(meaning,m);
+		lchild=rchild=NULL;
+	}
+	char* get_meaning()
+	{
+		return meaning;
+	}
+	char* get_word()
+	{
+		return word;
+	}
+	friend class dictionary;
+};
+class dictionary
+{
+	entry *root;
+public :
+	dictionary()
+{
+		root=NULL;
+}
+	entry *get_root();
+	void set_root(entry *);
+	void create();
+	void inorder(entry *);
+	void descending(entry *);
+	entry *search(char *w);
+	void modify(char *w);
+	void operator = (dictionary &);
+	entry *copy(entry *);
+	void del(entry *,entry *);
+	void del_search(char []);
+};
+entry* dictionary::get_root()
+{
+	return root;
+}
+void dictionary::set_root(entry *t)
+{
+	root =t;
+}
+void dictionary::create()
+{
+	int n;
+		cout<<"Enter the no of words\n";
+		cin>>n;
+		while(n--)
+		{
+			char w[20],m[20];
+			cout<<"Enter the word and its meaning\n";
+			cin>>w>>m;
+			entry *temp=new entry(w,m);
+			if(root==NULL)
+				root=temp;
+			else
+			{
+				entry *p,*q;
+				p=root;
+				q=NULL;
+				while(p!=NULL)
+				{
+					q=p;
+					if(strcmp(w,p->word)<0)
+						p=p->lchild;
+					else
+						p=p->rchild;
+				}
+				if(strcmp(w,q->word)<0)
+					q->lchild=temp;
+				else if(strcmp(w,q->word)>0)
+					q->rchild=temp;
+				else
+				{
+					cout<<"Duplicate Data\n\n";
+					delete temp;
+				}
+			}
+		}
+}
+void dictionary::inorder(entry *p)
+{
+	if(p!=NULL)
+	{
+		inorder(p->lchild);
+		cout<<p->word<<" : "<<p->meaning<<endl;
+		inorder(p->rchild);
+	}
+}
+entry *dictionary::search(char *w)
+{
+	int c;
+	int cnt=0;
+	entry* curr = root;
+	while(curr!=NULL)
+	{
+		cnt++;
+		c = strcmp(w,(curr->word));
+		if(c<0)
+		{
+			curr = curr->lchild;
+		}
+		else if(c>0)
+		{
+			curr = curr->rchild;
+		}
+		else if(c == 0)
+		{
+			cout<<"Word found\n";
+			cout<<cnt<<"\n";
+			return curr;
+		}
+		else
+		{
+			cout<<"Word not found\n";
+			return NULL;
+		}
+
+	}
+}
+void dictionary::modify(char *w)
+{
+	char m[100];
+	entry *p = search(w);
+	if(p==NULL)
+	{
+		cout<<"Word Not Found\n";
+		return;
+	}
+	else
+	{
+		cout<<"Entry the modified meaning of word\n";
+		cin>>m;
+		strcpy(p->meaning,m);
+		cout<<"Modified word is:\n";
+		cout<<p->word<<":"<<p->meaning<<"\n";
+	}
+
+
+}
+void dictionary :: operator = (dictionary &t)
+{
+	root=copy(t.root);
+}
+entry* dictionary::copy(entry *t)
+{
+	if(t==NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		entry* temp = new entry(t->word,t->meaning);
+		temp->lchild = copy(t->lchild);
+		temp->rchild = copy(t->rchild);
+		return temp;
+	}
+}
+void dictionary::del_search(char w[])
+{
+	entry* p;
+	entry* q;
+	p=root;
+	q=NULL;
+	int found=0;
+	while(p!=NULL&&found==0)
+	{
+		if(strcmp(p->word,w)==0)
+		{
+			del(q,p);
+			found=1;
+		}
+		else
+		{
+			if(strcmp(p->word,w)<0)
+			{
+				q=p;
+				p=p->rchild;
+			}
+			else
+			{
+				q=p;
+				p=p->lchild;
+			}
+		}
+	}
+
+}
+void dictionary::del(entry* p,entry* c)
+{
+	if(c->lchild!=NULL&&c->rchild!=NULL)
+	{
+		entry* c_s=c->rchild;
+		p=c;
+		while(c_s->lchild!=NULL)
+		{
+			p=c_s;
+			c_s=c_s->lchild;
+
+		}
+
+		strcpy(c->word,c_s->word);
+		strcpy(c->meaning,c_s->meaning);
+		if(p->lchild==c_s)
+		{
+			p->lchild=NULL;
+		}
+		else
+		{
+			p->rchild=NULL;
+		}
+		c=c_s;
+		delete(c);
+	}
+	if(c->lchild!=NULL&&c->rchild==NULL)
+	{
+		if(p->rchild==c)
+		{
+			p->rchild=c->lchild;
+		}
+		else
+		{
+			p->lchild=c->lchild;
+		}
+		delete(c);
+	}
+
+	if(c->lchild==NULL&&c->rchild!=NULL)
+	{
+		if(p->rchild==c)
+		{
+			p->rchild=c->lchild;
+		}
+		else
+		{
+			p->lchild=c->rchild;
+
+		}
+		delete(c);
+	}
+	if(c->lchild==NULL&&c->rchild==NULL)
+		{
+
+			if(p->rchild==c)
+			{
+				p->rchild=NULL;
+			}
+			else
+			{
+				p->rchild=NULL;
+			}
+			delete(c);
+		}
+}
+int main()
+{
+	dictionary d1,d2;
+	int x;
+	char ch;
+	do{
+		char w[50];
+		cout<<"Enter the choice\n1.create\n2.search\n3.modify\n4.copy\n5.delete\n6.exit\n";
+		cin>>x;
+		switch(x)
+		{
+		case 1:
+			d1.create();
+			d1.inorder(d1.get_root());
+			break;
+		case 2:
+		{
+			cout<<"Enter the word you want to search\n";
+			cin>>w;
+			entry *t = d1.search(w);
+			if(t==NULL)
+			{
+				cout<<"Word not found\n";
+			}
+			else
+				cout<<"Required word is:"<<t->get_word()<<": "<<t->get_meaning()<<"\n";
+			break;
+		}
+		case 3:
+		{
+			cout<<"Enter the word you want to modify\n";
+			cin>>w;
+			d1.modify(w);
+			break;
+		}
+		case 4:
+		{	d2 =d1;
+			d2.inorder(d2.get_root());
+			break;
+		}
+		case 5:
+		{	cout<<"Enter the word you want to delete\n";
+			cin>>w;
+			d1.del_search(w);
+			d1.inorder(d1.get_root());
+			break;
+		}
+		case 6:
+			exit(-1);
+
+
+		}
+		cout<<"Do you want to continue(y/n)?";
+		cin>>ch;
+	}while(ch=='y'||ch=='Y');
+}
+
+
