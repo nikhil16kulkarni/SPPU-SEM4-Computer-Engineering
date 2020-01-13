@@ -19,6 +19,19 @@ class Node
  class Node  *left;
  class Node * right;
  friend class dictionary;
+
+ public:
+ Node(){
+	 //k={};
+	 //m={};
+	 left=right=NULL;
+ }
+
+ Node(char kw[],char mn[]){
+	 strcpy(k,kw);
+	 strcpy(m,mn);
+	 left=right=NULL;
+ }
 };
 
 class dictionary
@@ -42,7 +55,8 @@ public:
  int update(Node*,char []);
  Node* del(Node*,char []);
  Node* min(Node*);
-
+ Node* copy(Node*);
+ void operator=(dictionary);
 
 
 };
@@ -84,17 +98,21 @@ void dictionary::create()
 
 void dictionary::insert(Node* root,Node* temp)
 {
- if(strcmp(temp->k,root->k)<0)
+if(strcmp(temp->k,root->k)==0){
+		cout<<"KeyWord is already present in dictionary\n\n";
+		return;
+	}
+else if(strcmp(temp->k,root->k)<0)
  {
-  if(root->left==NULL)
+   if(root->left==NULL)
    root->left=temp;
-  else
+   else
    insert(root->left,temp);
  }
- else
- { if(root->right == NULL)
-   root->right = temp;
-  else
+else{
+	if(root->right == NULL)
+    root->right = temp;
+   else
    insert(root->right,temp);
  }
 
@@ -237,18 +255,32 @@ Node* dictionary::min(Node *q)
  return q;
 }
 
+Node* dictionary::copy(Node* t){
+	Node* temp;
+	temp=NULL;
+	if(t!=NULL){
+		temp=new Node;
+		temp->left=copy(t->left);
+		temp->right=copy(t->right);
+	}
+	return temp;
+}
+
+void dictionary::operator=(dictionary t){
+	root=copy(t.root);
+}
 
 
 int main()
 {
  int ch;
- dictionary d;
+ dictionary d,cp;
  d.root = NULL;
 
 
  do
  {
-  cout<<"\nMenu\n1.Create\n2.Display\n3.Search\n4.Update\n5.Delete\nEnter your Choice:";
+  cout<<"\n\n\n\nMenu\n1.Create\n2.Display\n3.Search\n4.Update\n5.Delete\n6.Copy\nEnter your Choice:";
   cin>>ch;
 
   switch(ch)
@@ -320,11 +352,18 @@ int main()
   		  		  else
   		  		  {
   		  			  d.root=d.del(d.root,k);
+  		  			  cout<<"KeyWord deleted.....\n\n";
   		  		  }
   		  	  }
+  		  	  break;
+
+  	  case 6: cp=d;
+  	  	  	  cout<<"Tree copied..... Now printing the copied tree\n\n";
+  	  	  	  cp.displaya(cp.root);
+  	  	  	  break;
   	  }
  }
- while(ch<=5);
+ while(ch<=6);
  return 0;
 
 }
