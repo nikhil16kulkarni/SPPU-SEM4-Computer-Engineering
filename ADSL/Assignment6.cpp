@@ -53,7 +53,7 @@ int HashTable::search(string w){
 	if(i==MAX){
 		cout<<"\nWord "<<w<<" not found !\n";
 		return -1;
-	}
+	}.////////////////////
 }
 
 void HashTable::delete_word(string w){
